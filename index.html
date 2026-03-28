@@ -120,6 +120,26 @@ header {
   background: rgba(255,255,255,0.09);
   width: 240px;
 }
+.old-platform-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.06);    /* fundo sutil */
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 40px;                    /* formato pílula */
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);                    /* cinza apagado */
+  text-decoration: none;                  /* remove sublinhado */
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.old-platform-link:hover {
+  color: var(--text);                     /* fica branco ao passar o mouse */
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+}
 .search-icon {
   position: absolute;
   left: 14px; top: 50%;
@@ -472,36 +492,20 @@ footer strong { color: var(--text); }
       <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="filterGames()">
     </div>
   </div>
-
-  <div class="logo">EduPlay</div>
+  <div class="logo">EduPlay</div>          <!-- logo à esquerda -->
   <div class="header-right">
-
-    <!-- ✅ ADICIONE AQUI — antes do score-chip -->
-    <a href="https://URL-DA-PLATAFORMA-ANTIGA.com" target="_blank"
-       style="
-         background: rgba(255,255,255,0.06);
-         border: 1px solid rgba(255,255,255,0.12);
-         border-radius: 40px;
-         padding: 6px 16px;
-         font-size: 14px;
-         font-weight: 700;
-         color: #A7A9BE;
-         text-decoration: none;
-         display: flex;
-         align-items: center;
-         gap: 6px;
-         transition: all 0.18s;
-       "
-       onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.3)'"
-       onmouseout="this.style.color='#A7A9BE';this.style.borderColor='rgba(255,255,255,0.12)'"
-    >
-      🔗 Plataforma Antiga
+    
+    <!-- ✅ LINK INSERIDO AQUI -->
+    <a href="https://alvesdealmeida.github.io/menuEDU/"
+       target="_blank"
+       class="old-platform-link">
+      🔗 Plataforma Anterior
     </a>
-    <!-- fim do link -->
 
-    <div class="score-chip">⭐ <span id="totalScore">0</span> pts</div>
-    <div class="search-wrap"> ... </div>
+    <div class="score-chip">⭐ 0 pts</div>  <!-- pontuação -->
+    <div class="search-wrap">...</div>       <!-- busca -->
   </div>
+  
 </header>
 
 <!-- ── HERO ── -->
