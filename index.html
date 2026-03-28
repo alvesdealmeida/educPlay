@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>EducPlay — Portal de Jogos Educacionais</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -472,6 +472,114 @@ footer strong { color: var(--text); }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+/* ════════════════════════════════════
+   MOBILE & TABLET — EduPlay Menu
+   ════════════════════════════════════ */
+
+/* ── Tablet (até 900px) ──────────────── */
+@media (max-width: 900px) {
+
+  .games-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .stats-bar { gap: 24px; }
+}
+
+/* ── Celular (até 600px) ─────────────── */
+@media (max-width: 600px) {
+
+  /* HEADER */
+  header { padding: 0 16px; height: 60px; }
+  .logo   { font-size: 22px; }
+
+  /* Esconde a busca no celular */
+  .search-wrap { display: none; }
+
+  /* Link da plataforma anterior: mostra só o ícone */
+  .old-platform-link { padding: 7px 10px; }
+  .old-platform-link .link-text { display: none; }
+
+  .score-chip { font-size: 13px; padding: 5px 12px; }
+
+  /* HERO */
+  .hero       { padding: 28px 16px 20px; }
+  .hero-sub   { font-size: 14px; margin-bottom: 20px; }
+  .hero-eyebrow { font-size: 11px; padding: 5px 12px; }
+
+  /* STATS: grade 2×2 */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 0 16px 28px;
+  }
+  .stat-num   { font-size: 28px; }
+  .stat-label { font-size: 12px; }
+
+  /* FILTROS: scroll horizontal (não quebra linha) */
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0 16px 20px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    touch-action: manipulation;
+  }
+
+  /* GRID: 2 colunas no celular */
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .grid-wrap { padding: 0 16px 60px; }
+
+  /* CARDS: compactos e fáceis de tocar */
+  .game-card  { border-radius: 14px; touch-action: manipulation; }
+  .card-body  { padding: 12px; }
+  .card-icon  { width: 42px; height: 42px; font-size: 20px; border-radius: 12px; margin-bottom: 8px; }
+  .card-title { font-size: 15px; }
+  .card-desc  {
+    font-size: 11px; margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;       /* máx 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .play-btn   { padding: 6px 12px; font-size: 12px; min-height: 34px; touch-action: manipulation; }
+  .stars      { font-size: 11px; }
+  .badge-new, .badge-hot { font-size: 9px; padding: 2px 7px; top: 10px; right: 10px; }
+
+  /* Tooltip não funciona em touch — desativa */
+  .tooltip { display: none !important; }
+
+  /* FOOTER */
+  footer { padding: 20px 16px; font-size: 12px; }
+}
+
+/* ── Celular muito pequeno (até 360px): 1 coluna ── */
+@media (max-width: 360px) {
+  .games-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Tablet médio (601px–900px) ──────── */
+@media (min-width: 601px) and (max-width: 900px) {
+  header              { padding: 0 24px; }
+  .search-wrap input { width: 150px; }
+  .search-wrap input:focus { width: 180px; }
+  .old-platform-link  { font-size: 12px; padding: 6px 12px; }
+  .hero               { padding: 40px 24px 32px; }
+  .filters            { padding: 0 24px 24px; }
+  .grid-wrap          { padding: 0 24px 60px; }
+}
 </style>
 </head>
 <body>
@@ -495,10 +603,8 @@ footer strong { color: var(--text); }
   
     
     <!-- ✅ LINK INSERIDO AQUI -->
-    <a href="https://alvesdealmeida.github.io/menuEDU/"
-       target="_blank"
-       class="old-platform-link">
-      🔗 Plataforma Anterior
+    <a href="https://alvesdealmeida.github.io/menuEDU/" target="_blank" class="old-platform-link">
+  🔗 <span class="link-text">Plataforma Anterior</span>
     </a>
 
     <div class="score-chip">⭐ 0 pts</div>  <!-- pontuação -->
