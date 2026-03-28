@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPlay — Portal de Jogos Educacionais</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0F0E17;
+  --surface:  #1A1829;
+  --card-bg:  #201E30;
+  --border:   rgba(255,255,255,0.07);
+  --text:     #FFFFFE;
+  --muted:    #A7A9BE;
+  --radius:   20px;
+  --gap:      20px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background decoration ─────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% -10%, rgba(108,92,231,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 110%, rgba(255,118,117,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0,210,211,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Floating particles ─────────────────────────────────────── */
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.12;
+  animation: float linear infinite;
+}
+@keyframes float {
+  0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.12; }
+  90%  { opacity: 0.08; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+header {
+  position: relative;
+  z-index: 10;
+  padding: 0 clamp(20px, 5vw, 60px);
+  background: rgba(15,14,23,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  position: sticky;
+  top: 0;
+}
+
+.logo {
+  font-family: 'Fredoka One', cursive;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #FF6B6B, #FFA36B, #FFD93D, #6BCB77, #4D96FF, #C77DFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-right { display: flex; align-items: center; gap: 16px; }
+
+.score-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFD93D;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-wrap {
+  position: relative;
+}
+.search-wrap input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 8px 16px 8px 40px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  width: 200px;
+  outline: none;
+  transition: all 0.2s;
+}
+.search-wrap input::placeholder { color: var(--muted); }
+.search-wrap input:focus {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.09);
+  width: 240px;
+}
+.search-icon {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  opacity: 0.5;
+}
+
+/* ── Hero ───────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 64px clamp(20px, 5vw, 60px) 48px;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 40px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+.hero-eyebrow span { color: #6BCB77; }
+
+.hero h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #FFFFFE 0%, #A7A9BE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+/* ── Filter chips ───────────────────────────────────────────── */
+.filters {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 clamp(20px, 5vw, 60px) 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chip {
+  cursor: pointer;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 40px;
+  padding: 7px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: all 0.18s;
+  white-space: nowrap;
+  user-select: none;
+}
+.chip:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.09);
+}
+.chip.active {
+  color: var(--text);
+  background: var(--chip-bg, rgba(108,92,231,0.25));
+  border-color: var(--chip-border, rgba(108,92,231,0.6));
+}
+
+/* ── Games grid ─────────────────────────────────────────────── */
+.grid-wrap {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(20px, 5vw, 60px) 80px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 16px;
+  opacity: 0.6;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gap);
+}
+
+/* ── Game card ──────────────────────────────────────────────── */
+.game-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s, border-color 0.22s;
+  overflow: hidden;
+  position: relative;
+  animation: cardIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes cardIn {
+  from { transform: translateY(30px) scale(0.92); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+.game-card:hover {
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--c-mid);
+  border-color: var(--c-mid);
+  z-index: 5;
+}
+
+.game-card.hidden { display: none; }
+
+/* Card top color band */
+.card-band {
+  height: 8px;
+  background: linear-gradient(90deg, var(--c-dark), var(--c-light));
+}
+
+/* Card body */
+.card-body { padding: 20px; }
+
+/* Icon circle */
+.card-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: var(--c-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 14px;
+  transition: transform 0.2s;
+  border: 1px solid var(--c-mid);
+}
+.game-card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
+
+/* Tags row */
+.card-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.tag-subject {
+  background: var(--c-dim);
+  color: var(--c-text);
+}
+.tag-age {
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+}
+
+/* Card title */
+.card-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+/* Card desc */
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+/* Card footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.stars { color: #FFD93D; font-size: 13px; letter-spacing: 2px; }
+
+.play-btn {
+  background: var(--c-mid);
+  color: var(--bg);
+  border: none;
+  border-radius: 30px;
+  padding: 7px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.play-btn:hover { filter: brightness(1.1); transform: scale(1.05); }
+
+/* New badge */
+.badge-new {
+  position: absolute;
+  top: 18px; right: 18px;
+  background: #FF6B6B;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.badge-hot {
+  position: absolute;
+  top: 18px; right: 18px;
+  background: #FF9F43;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* ── Stats bar ──────────────────────────────────────────────── */
+.stats-bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: clamp(20px, 4vw, 60px);
+  padding: 0 clamp(20px,5vw,60px) 48px;
+  flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Fredoka One', cursive;
+  font-size: 36px;
+  background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 32px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+footer strong { color: var(--text); }
+
+/* ── Empty state ────────────────────────────────────────────── */
+#empty-state {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+#empty-state .empty-icon { font-size: 56px; margin-bottom: 16px; }
+#empty-state h3 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
+#empty-state p { font-size: 14px; }
+
+/* ── Tooltip ─────────────────────────────────────────────────── */
+.tooltip {
+  position: fixed;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: white;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.15s;
+  max-width: 220px;
+  line-height: 1.5;
+}
+.tooltip.show { opacity: 1; }
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">EduPlay</div>
+  <div class="header-right">
+    <div class="score-chip">⭐ <span id="totalScore">0</span> pts</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="filterGames()">
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span>●</span> Portal Educacional · 20 jogos
+  </div>
+  <h1>Aprender é<br>uma aventura</h1>
+  <p class="hero-sub">Jogos educacionais para todas as turmas. Escolha o seu favorito e comece a explorar!</p>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-num">20</span>
+    <span class="stat-label">Jogos disponíveis</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">8</span>
+    <span class="stat-label">Disciplinas</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">2°–9°</span>
+    <span class="stat-label">Anos escolares</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <span class="stat-label">No navegador</span>
+  </div>
+</div>
+
+<!-- ── FILTERS ── -->
+<div class="filters" id="filters">
+  <div class="chip active" style="--chip-bg:rgba(255,255,255,0.1);--chip-border:rgba(255,255,255,0.25)" onclick="filterBySubject('Todos')">Todos</div>
+  <div class="chip" style="--chip-bg:rgba(75,207,250,0.15);--chip-border:rgba(75,207,250,0.5)" onclick="filterBySubject('Matemática')">📐 Matemática</div>
+  <div class="chip" style="--chip-bg:rgba(106,234,151,0.15);--chip-border:rgba(106,234,151,0.5)" onclick="filterBySubject('Português')">📖 Português</div>
+  <div class="chip" style="--chip-bg:rgba(255,182,107,0.15);--chip-border:rgba(255,182,107,0.5)" onclick="filterBySubject('Ciências')">🔬 Ciências</div>
+  <div class="chip" style="--chip-bg:rgba(180,120,255,0.15);--chip-border:rgba(180,120,255,0.5)" onclick="filterBySubject('Geografia')">🌍 Geografia</div>
+  <div class="chip" style="--chip-bg:rgba(255,107,107,0.15);--chip-border:rgba(255,107,107,0.5)" onclick="filterBySubject('História')">🏛️ História</div>
+  <div class="chip" style="--chip-bg:rgba(255,217,61,0.15);--chip-border:rgba(255,217,61,0.5)" onclick="filterBySubject('Artes')">🎨 Artes</div>
+  <div class="chip" style="--chip-bg:rgba(61,217,255,0.15);--chip-border:rgba(61,217,255,0.5)" onclick="filterBySubject('Inglês')">🌐 Inglês</div>
+  <div class="chip" style="--chip-bg:rgba(107,255,200,0.15);--chip-border:rgba(107,255,200,0.5)" onclick="filterBySubject('Outros')">✨ Outros</div>
+</div>
+
+<!-- ── GRID ── -->
+<div class="grid-wrap">
+  <p class="section-label" id="gridLabel">Todos os jogos</p>
+  <div class="games-grid" id="gamesGrid"></div>
+  <div id="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3>Nenhum jogo encontrado</h3>
+    <p>Tente outro filtro ou termo de busca</p>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <strong>EduPlay</strong> — Portal de Jogos Educacionais · Desenvolvido com ❤️ para educadores e alunos · 2025
+</footer>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const GAMES = [
+  {
+    id: 1, name: 'TangramPlay', emoji: '🔷',
+    subject: 'Matemática', desc: 'Monte figuras geométricas com as 7 peças do tangram. Desenvolve raciocínio espacial e geometria.',
+    age: '7–11 anos', stars: 3, isNew: false, isHot: true, file: 'tangram-game.html',
+    c: { dark:'#4D4AC7', mid:'#6C5CE7', light:'#A29BFE', dim:'rgba(108,92,231,0.15)', text:'#C8C5FF' }
+  },
+  {
+    id: 2, name: 'Tabuada Rocket', emoji: '🚀',
+    subject: 'Matemática', desc: 'Desvie dos meteoros respondendo à tabuada. Quanto mais rápido, mais estrelas você ganha!',
+    age: '7–10 anos', stars: 3, isNew: true, isHot: false, file: '#',
+    c: { dark:'#B54A00', mid:'#FF7043', light:'#FF9472', dim:'rgba(255,112,67,0.15)', text:'#FFB4A0' }
+  },
+  {
+    id: 3, name: 'FracionaDino', emoji: '🦕',
+    subject: 'Matemática', desc: 'Alimente o dinossauro com as frações corretas. Aprenda numerador, denominador e equivalência.',
+    age: '8–11 anos', stars: 2, isNew: false, isHot: false, file: '#',
+    c: { dark:'#1A7A4A', mid:'#2ECC71', light:'#82E0AA', dim:'rgba(46,204,113,0.15)', text:'#A9DFBF' }
+  },
+  {
+    id: 4, name: 'LetraFeliz', emoji: '🔤',
+    subject: 'Português', desc: 'Aprenda o alfabeto com animações divertidas, sons e palavras ilustradas para cada letra.',
+    age: '6–8 anos', stars: 3, isNew: false, isHot: true, file: '#',
+    c: { dark:'#8B1A8B', mid:'#E91E8C', light:'#F48FB1', dim:'rgba(233,30,140,0.15)', text:'#F8BBD9' }
+  },
+  {
+    id: 5, name: 'SílabaMágica', emoji: '✨',
+    subject: 'Português', desc: 'Monte palavras arrastando sílabas. Três níveis de dificuldade para a jornada da leitura.',
+    age: '6–9 anos', stars: 3, isNew: false, isHot: false, file: '#',
+    c: { dark:'#7B4F00', mid:'#F39C12', light:'#F8C471', dim:'rgba(243,156,18,0.15)', text:'#FAD7A0' }
+  },
+  {
+    id: 6, name: 'ContoMundo', emoji: '📚',
+    subject: 'Português', desc: 'Histórias interativas onde suas escolhas mudam o final. Estimula leitura e interpretação.',
+    age: '8–12 anos', stars: 2, isNew: true, isHot: false, file: '#',
+    c: { dark:'#0D5E6E', mid:'#00BCD4', light:'#80DEEA', dim:'rgba(0,188,212,0.15)', text:'#B2EBF2' }
+  },
+  {
+    id: 7, name: 'SistemaSolar', emoji: '🪐',
+    subject: 'Ciências', desc: 'Explore os planetas, lune e cometas em 3D. Quiz interativo sobre astronomia e espaço.',
+    age: '9–13 anos', stars: 3, isNew: false, isHot: true, file: '#',
+    c: { dark:'#1A237E', mid:'#3F51B5', light:'#7986CB', dim:'rgba(63,81,181,0.15)', text:'#C5CAE9' }
+  },
+  {
+    id: 8, name: 'BioExplorer', emoji: '🧬',
+    subject: 'Ciências', desc: 'Mergulhe na célula, descubra os sistemas do corpo humano e classifique seres vivos.',
+    age: '10–14 anos', stars: 2, isNew: false, isHot: false, file: '#',
+    c: { dark:'#1B5E20', mid:'#388E3C', light:'#66BB6A', dim:'rgba(56,142,60,0.15)', text:'#A5D6A7' }
+  },
+  {
+    id: 9, name: 'ClimaQuiz', emoji: '🌿',
+    subject: 'Ciências', desc: 'Quiz sobre meio ambiente, biomas brasileiros e mudanças climáticas. Salve o planeta!',
+    age: '9–13 anos', stars: 3, isNew: false, isHot: false, file: '#',
+    c: { dark:'#2E7D32', mid:'#4CAF50', light:'#A5D6A7', dim:'rgba(76,175,80,0.15)', text:'#C8E6C9' }
+  },
+  {
+    id: 10, name: 'MapaBrasil', emoji: '🗺️',
+    subject: 'Geografia', desc: 'Localize estados, capitais, rios e biomas no mapa. Do Amapá ao Rio Grande do Sul!',
+    age: '9–14 anos', stars: 3, isNew: false, isHot: true, file: '#',
+    c: { dark:'#37474F', mid:'#607D8B', light:'#90A4AE', dim:'rgba(96,125,139,0.15)', text:'#CFD8DC' }
+  },
+  {
+    id: 11, name: 'GeoMundo', emoji: '🌏',
+    subject: 'Geografia', desc: 'Explore continentes, oceanos e países com minijogos de localização e cultura.',
+    age: '10–14 anos', stars: 2, isNew: false, isHot: false, file: '#',
+    c: { dark:'#004D40', mid:'#009688', light:'#4DB6AC', dim:'rgba(0,150,136,0.15)', text:'#B2DFDB' }
+  },
+  {
+    id: 12, name: 'HistóriaViva', emoji: '🏛️',
+    subject: 'História', desc: 'Linha do tempo interativa com civilizações, eventos históricos e quiz de personagens.',
+    age: '10–14 anos', stars: 3, isNew: true, isHot: false, file: '#',
+    c: { dark:'#4A148C', mid:'#7B1FA2', light:'#AB47BC', dim:'rgba(123,31,162,0.15)', text:'#CE93D8' }
+  },
+  {
+    id: 13, name: 'BrasilColônia', emoji: '⚓',
+    subject: 'História', desc: 'Reviva a chegada ao Brasil, o período colonial e a independência em formato de aventura.',
+    age: '9–13 anos', stars: 2, isNew: false, isHot: false, file: '#',
+    c: { dark:'#6D4C41', mid:'#A1887F', light:'#D7CCC8', dim:'rgba(161,136,127,0.15)', text:'#EFEBE9' }
+  },
+  {
+    id: 14, name: 'ArteAtelier', emoji: '🎨',
+    subject: 'Artes', desc: 'Studio digital com ferramentas de pintura, colagem e desenho. Explore estilos e movimentos.',
+    age: '7–14 anos', stars: 3, isNew: false, isHot: true, file: '#',
+    c: { dark:'#AD1457', mid:'#E91E63', light:'#F06292', dim:'rgba(233,30,99,0.15)', text:'#F8BBD9' }
+  },
+  {
+    id: 15, name: 'RitmoBeat', emoji: '🎵',
+    subject: 'Artes', desc: 'Aprenda ritmo, notas musicais e instrumentos com jogos de percussão e melodia.',
+    age: '7–12 anos', stars: 3, isNew: false, isHot: false, file: '#',
+    c: { dark:'#E65100', mid:'#FF6F00', light:'#FFA726', dim:'rgba(255,111,0,0.15)', text:'#FFCC80' }
+  },
+  {
+    id: 16, name: 'English Quest', emoji: '🌐',
+    subject: 'Inglês', desc: 'Aprenda inglês com missões, diálogos e vocabulário temático. From beginner to advanced!',
+    age: '8–14 anos', stars: 3, isNew: false, isHot: true, file: '#',
+    c: { dark:'#0277BD', mid:'#0288D1', light:'#4FC3F7', dim:'rgba(2,136,209,0.15)', text:'#B3E5FC' }
+  },
+  {
+    id: 17, name: 'CódigoBot', emoji: '🤖',
+    subject: 'Outros', desc: 'Introdução à programação e lógica com blocos visuais. Programe seu próprio robô!',
+    age: '9–14 anos', stars: 3, isNew: true, isHot: false, file: '#',
+    c: { dark:'#1B5E20', mid:'#00C853', light:'#69F0AE', dim:'rgba(0,200,83,0.15)', text:'#B9F6CA' }
+  },
+  {
+    id: 18, name: 'FinançasJr', emoji: '💰',
+    subject: 'Outros', desc: 'Aprenda a guardar, gastar e investir dinheiro com simulações do dia a dia.',
+    age: '9–13 anos', stars: 2, isNew: false, isHot: false, file: '#',
+    c: { dark:'#33691E', mid:'#7CB342', light:'#AED581', dim:'rgba(124,179,66,0.15)', text:'#DCEDC8' }
+  },
+  {
+    id: 19, name: 'NutriGame', emoji: '🥦',
+    subject: 'Outros', desc: 'Monte pratos saudáveis, descubra nutrientes e aprenda sobre alimentação equilibrada.',
+    age: '7–11 anos', stars: 3, isNew: false, isHot: false, file: '#',
+    c: { dark:'#827717', mid:'#F9A825', light:'#FFE082', dim:'rgba(249,168,37,0.15)', text:'#FFF8E1' }
+  },
+  {
+    id: 20, name: 'MindCalm', emoji: '🧘',
+    subject: 'Outros', desc: 'Atividades de mindfulness, respiração e emoções para o bem-estar emocional dos alunos.',
+    age: '7–14 anos', stars: 2, isNew: true, isHot: false, file: '#',
+    c: { dark:'#4527A0', mid:'#7E57C2', light:'#B39DDB', dim:'rgba(126,87,194,0.15)', text:'#D1C4E9' }
+  },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let activeSubject = 'Todos';
+let searchTerm = '';
+let totalScore = 0;
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderGames(list) {
+  const grid = document.getElementById('gamesGrid');
+  const empty = document.getElementById('empty-state');
+  grid.innerHTML = '';
+
+  if (list.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.forEach((g, i) => {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.dataset.subject = g.subject;
+    card.dataset.id = g.id;
+    card.style.cssText = `
+      --c-dark:${g.c.dark};
+      --c-mid:${g.c.mid};
+      --c-light:${g.c.light};
+      --c-dim:${g.c.dim};
+      --c-text:${g.c.text};
+      animation-delay:${i * 40}ms;
+    `;
+
+    const starsHtml = '★'.repeat(g.stars) + '☆'.repeat(3 - g.stars);
+    const badgeHtml = g.isNew ? '<span class="badge-new">Novo</span>' : g.isHot ? '<span class="badge-hot">🔥 Hot</span>' : '';
+
+    card.innerHTML = `
+      ${badgeHtml}
+      <div class="card-band"></div>
+      <div class="card-body">
+        <div class="card-icon">${g.emoji}</div>
+        <div class="card-tags">
+          <span class="tag tag-subject">${g.subject}</span>
+          <span class="tag tag-age">${g.age}</span>
+        </div>
+        <div class="card-title">${g.name}</div>
+        <div class="card-desc">${g.desc}</div>
+        <div class="card-footer">
+          <span class="stars">${starsHtml}</span>
+          <button class="play-btn" onclick="launchGame(event, ${g.id})">
+            Jogar <span>▶</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('mouseenter', (e) => showTooltip(e, g));
+    card.addEventListener('mouseleave', hideTooltip);
+    card.addEventListener('mousemove', moveTooltip);
+    grid.appendChild(card);
+  });
+}
+
+// ── Filter ────────────────────────────────────────────────────────────────────
+function filterGames() {
+  searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  applyFilters();
+}
+
+function filterBySubject(subject) {
+  activeSubject = subject;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  let list = [...GAMES];
+  if (activeSubject !== 'Todos') list = list.filter(g => g.subject === activeSubject);
+  if (searchTerm) list = list.filter(g =>
+    g.name.toLowerCase().includes(searchTerm) ||
+    g.desc.toLowerCase().includes(searchTerm) ||
+    g.subject.toLowerCase().includes(searchTerm)
+  );
+  const label = document.getElementById('gridLabel');
+  label.textContent = activeSubject === 'Todos' ? 'Todos os jogos' : activeSubject;
+  renderGames(list);
+}
+
+// ── Launch ────────────────────────────────────────────────────────────────────
+function launchGame(e, id) {
+  e.stopPropagation();
+  const g = GAMES.find(x => x.id === id);
+  if (!g) return;
+  if (g.file && g.file !== '#') {
+    // In a real deployment, open the game file
+    // window.open(g.file, '_blank');
+    showLaunchFeedback(g);
+  } else {
+    showLaunchFeedback(g);
+  }
+  totalScore += 10;
+  document.getElementById('totalScore').textContent = totalScore;
+}
+
+function showLaunchFeedback(g) {
+  // Create a brief launch overlay feedback
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed; inset: 0; background: ${g.c.dark}cc;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(10px);
+  `;
+  overlay.innerHTML = `
+    <style>@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes popBig{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}</style>
+    <div style="text-align:center;animation:popBig 0.3s cubic-bezier(.34,1.56,.64,1)">
+      <div style="font-size:72px;margin-bottom:16px">${g.emoji}</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:32px;color:white;margin-bottom:8px">${g.name}</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.7);margin-bottom:24px">Carregando...</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:4px;height:4px;width:180px;margin:0 auto;overflow:hidden">
+        <div style="background:${g.c.light};height:100%;border-radius:4px;animation:load 1.2s ease forwards" id="progBar"></div>
+      </div>
+    </div>
+  `;
+  const style = document.createElement('style');
+  style.textContent = '@keyframes load{from{width:0%}to{width:100%}}';
+  overlay.appendChild(style);
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', () => overlay.remove());
+  setTimeout(() => overlay.remove(), 1400);
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+let ttEl = document.getElementById('tooltip');
+let ttTimeout;
+
+function showTooltip(e, g) {
+  clearTimeout(ttTimeout);
+  ttEl.innerHTML = `<strong>${g.name}</strong><br>${g.age} · ${g.stars}/3 estrelas`;
+  ttEl.classList.add('show');
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  const x = e.clientX + 16;
+  const y = e.clientY + 16;
+  ttEl.style.left = Math.min(x, window.innerWidth - 240) + 'px';
+  ttEl.style.top = y + 'px';
+}
+function hideTooltip() {
+  ttTimeout = setTimeout(() => ttEl.classList.remove('show'), 100);
+}
+
+// ── Particles ─────────────────────────────────────────────────────────────────
+function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#6C5CE7','#FF7675','#00CEC9','#FDCB6E','#FD79A8','#55EFC4','#A29BFE'];
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const size = 4 + Math.random() * 16;
+    el.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${15+Math.random()*25}s;
+      animation-delay:-${Math.random()*20}s;
+    `;
+    container.appendChild(el);
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+createParticles();
+renderGames(GAMES);
+</script>
+</body>
+</html>
