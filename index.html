@@ -751,7 +751,7 @@ function launchGame(e, id) {
   if (!g) return;
   if (g.file && g.file !== '#') {
     // In a real deployment, open the game file
-    // window.open(g.file, '_blank');
+    window.open(g.file, '_blank');
     showLaunchFeedback(g);
   } else {
     showLaunchFeedback(g);
